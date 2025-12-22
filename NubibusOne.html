@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NubibusOne</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f0f2f5; color: #333; }
+
+    }
+
+    /* Telas de login/registro/recuperação */
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    .card {
+      background: white;
+      padding: 40px 35px;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 420px;
+    }
+    h2 { text-align: center; margin-bottom: 30px; color: #444; }
+    input { width: 100%; padding: 13px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+    button { width: 100%; padding: 13px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 15px; transition: 0.3s; }
+    button:hover { background: #5a6fd8; }
+    .link { text-align: center; margin-top: 20px; color: #667eea; cursor: pointer; text-decoration: underline; }
+    .link:hover { color: #764ba2; }
+
+    /* HOME – MENU NO LADO ESQUERDO */
+    .home { display: none; min-height: 100vh; background: #f8f9fa; }
+    .header {
+      background: #667eea;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .hamburger-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .hamburger-btn span {
+      display: block;
+      width: 28px;
+      height: 4px;
+      background: white;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+    .hamburger-btn.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+    .hamburger-btn.active span:nth-child(2) { opacity: 0; }
+    .hamburger-btn.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -8px); }
+    .logo { font-size: 24px; font-weight: bold; margin-left: auto; }
+
+    .nav {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      width: 280px;
+      height: 100%;
+      background: #2c3e50;
+      transition: left 0.35s ease;
+      padding-top: 90px;
+      z-index: 1000;
+      box-shadow: 5px 0 20px rgba(0,0,0,0.3);
+    }
+    .nav.open { left: 0; }
+    .nav a {
+      display: block;
+      color: #ecf0f1;
+      padding: 18px 30px;
+      text-decoration: none;
+      font-size: 18px;
+    }
+    .nav a:hover { background: #34495e; }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      z-index: 999;
+    }
+    .overlay.active { display: block; }
+
+    .section { display: none; padding: 20px; }
+    .section.active { display: block; }
+    .welcome { font-size: 34px; margin-bottom: 20px; }
+    .logout-btn { background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; }
+    .logout-btn:hover { background: #c0392b; }
+
+    /* Os teus estilos das secções (calendário, notas, etc.) */
+    #calendar{max-width:400px;margin:20px auto;background:rgba(215,215,215,1);padding:10px;border-radius:10px;color:#000000;}
+    .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+    .calendar-header button{background:gold;color:#333;padding:5px 10px;border:none;border-radius:5px;cursor:pointer;}
+    .calendar-weekdays, .calendar-days{display:grid;grid-template-columns:repeat(7,1fr);}
+    .calendar-weekdays div{font-weight:bold;text-align:center;padding:5px;}
+    .calendar-days div{text-align:center;padding:10px;margin:2px;cursor:pointer;border-radius:5px;transition:.3s;}
+    .calendar-days div:hover{background:rgba(255,255,215,0.3);}
+    .calendar-days .today{background:gold;color:#333;font-weight:bold;}
+    .calendar-days .has-event{background:#ffd700;color:#333;font-weight:bold;}
+    .event-item{display:flex;justify-content:space-between;align-items:center;margin:5px 0;background:rgba(255,255,255,0.1);padding:5px 10px;border-radius:5px;}
+    .event-item button{margin-left:5px;background:#c62828;color:white;border:none;padding:2px 6px;border-radius:3px;cursor:pointer;}
+    .event-item button.edit{background:#ffd700;color:#333;}
+    .campo{margin:10px 0;}
+    .campo label{display:block;margin-bottom:5px;font-weight:bold;}
+    .campo input, .campo select{width:100%;padding:8px;border-radius:5px;border:none;}
+    .btn-salvar{background:#ffd700;color:#333;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;margin-top:10px;}
+    .btnCalc{background:#eee;color:#333;border:none;padding:20px;border-radius:12px;font-size:18px;cursor:pointer;}
+    .btnCalc:hover{background:#ddd;}
+    .btnCalc.op{background:#f4a261;color:white;}
+    .btnCalc.op:hover{background:#e76f51;}
+    .btnCalc.eq{background:#2a9d8f;color:white;}
+    .btnCalc.eq:hover{background:#21867a;}
+    #foldersContainer div.item, #filesContainer div.item{
+      display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.1);padding:10px;border-radius:8px;
+    }
+    #foldersContainer div.item:hover, #filesContainer div.item:hover{background:rgba(255,215,0,0.2);}
+    .item button{background:#ffd700;color:#333;border:none;padding:5px 8px;border-radius:5px;cursor:pointer;}
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div class="container" id="loginPage">
+    <div class="card">
+      <h2>Login</h2>
+      <input type="text" id="loginUser" placeholder="Usuário ou e-mail">
+      <input type="password" id="loginPass" placeholder="Senha">
+      <button onclick="fazerLogin()">Entrar</button>
+      <div class="link" onclick="mostrarTela('recuperarPage')">Esqueci minha senha</div>
+      <div class="link" onclick="mostrarTela('registroPage')">Criar nova conta</div>
+    </div>
+  </div>
+
+  <!-- REGISTRO -->
+  <div class="container" id="registroPage" style="display:none">
+    <div class="card">
+      <h2>Criar Conta</h2>
+      <input type="text" id="regNome" placeholder="Nome completo">
+      <input type="email" id="regEmail" placeholder="E-mail">
+      <input type="text" id="regUser" placeholder="Nome de usuário">
+      <input type="password" id="regPass" placeholder="Senha">
+      <input type="password" id="regPass2" placeholder="Confirmar senha">
+      <button onclick="criarConta()">Criar Conta</button>
+      <div class="link" onclick="mostrarTela('loginPage')">Já tenho conta</div>
+    </div>
+  </div>
+
+  <!-- RECUPERAR SENHA -->
+  <div class="container" id="recuperarPage" style="display:none">
+    <div class="card">
+      <h2>Recuperar Senha</h2>
+      <p>Digite seu e-mail para receber o link.</p>
+      <input type="email" id="recEmail" placeholder="Seu e-mail">
+      <button onclick="recuperarSenha()">Enviar link</button>
+      <div class="link" onclick="mostrarTela('loginPage')">Voltar ao login</div>
+    </div>
+  </div>
+
+  <!-- HOME COM MENU À ESQUERDA -->
+  <div class="home" id="homePage">
+    <header class="header">
+      <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="logo">NubibusOne</div>
+    </header>
+
+    <nav class="nav" id="sidebar">
+      <a href="#" data-target="home">Home</a>
+      <a href="#" data-target="notas">Bloco de notas</a>
+      <a href="#" data-target="ficheiros">Ficheiros</a>
+      <a href="#" data-target="calendario">Calendário</a>
+      <a href="#" data-target="calco">Calculadora</a>
+      <a href="#" data-target="perfil">Perfil</a>
+      <a href="#" data-target="config">Configurações de conta</a>
+      <a href="#" onclick="fazerLogout()">Sair</a>
+    </nav>
+
+    <div class="overlay" onclick="fecharMenu()"></div>
+
+    <!-- SECÇÕES -->
+    <div class="section active" id="home">
+      <h1 class="welcome">Olá, <span id="nomeUsuario">Usuário</span>!</h1>
+      <p>Bem-vindo! Toque nos três tracinhos no canto superior esquerdo para abrir o menu.</p>
+      <button class="logout-btn" onclick="fazerLogout()">Sair</button>
+    </div>
+
+    <!-- Calendário -->
+    <div class="section" id="calendario">
+      <h1>Calendário</h1>
+      <p>Clica num dia para criar eventos. Os eventos são guardados no navegador.</p>
+      <div id="calendar">
+        <div class="calendar-header">
+          <button id="prevMonth">Previous</button>
+          <span id="monthYear"></span>
+          <button id="nextMonth">Next</button>
+        </div>
+        <div class="calendar-body">
+          <div class="calendar-weekdays">
+            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div>
+            <div>Qui</div><div>Sex</div><div>Sáb</div>
+          </div>
+          <div class="calendar-days" id="calendarDays"></div>
+        </div>
+      </div>
+      <div id="eventList" style="max-width:400px;margin:20px auto;color:white;">
+        <h3>Eventos do dia selecionado:</h3>
+        <ul id="events"></ul>
+      </div>
+    </div>
+
+<!-- ==================== BLOCOS DE NOTAS – EXATAMENTE COMO NA TUA IMAGEM ==================== -->
+<div class="section" id="notas">
+  <h1 style="text-align:center; margin:30px 0 20px; font-size:28px;">Bloco de notas</h1>
+
+  <!-- Container das notas -->
+  <div id="subContainer" style="max-width:750px; margin:0 auto 100px;"></div>
+
+  <!-- Botão fixo em baixo -->
+  <div style="position:fixed; bottom:30px; left:50%; transform:translateX(-50%); z-index:100;">
+    <button onclick="novaSub()" style="background:#222; color:white; padding:16px 32px; border-radius:50px; font-size:18px; box-shadow:0 6px 20px rgba(0,0,0,0.3); border:none; cursor:pointer;">
+      + Criar nova Subsecção
+    </button>
+  </div>
+</div>
+
+<script>
+let editorAtivo = null;
+
+function format(cmd, val = null) {
+  if (!editorAtivo) return;
+  editorAtivo.focus();
+  document.execCommand(cmd, false, val);
+}
+
+function limparFormatacao() {
+  if (!editorAtivo) return;
+  editorAtivo.focus();
+  document.execCommand('removeFormat', false, null);
+  document.execCommand('formatBlock', false, 'p');
+}
+
+function novaSub() {
+  const nome = prompt("Nome da subsecção:", "Nova nota") || "Sem título";
+  const id = 'nota_' + Date.now();
+
+  const lista = JSON.parse(localStorage.getItem('listaNotas') || '[]');
+  lista.push({ id, nome });
+  localStorage.setItem('listaNotas', JSON.stringify(lista));
+
+  criarNota(id, nome);
+}
+
+function criarNota(id, nome) {
+  const container = document.createElement('div');
+  container.style.background = 'white';
+  container.style.borderRadius = '18px';
+  container.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)';
+  container.style.marginBottom = '20px';
+  container.style.overflow = 'hidden';
+  container.style.maxWidth = '700px';
+  container.style.marginLeft = 'auto';
+  container.style.marginRight = 'auto';
+
+  const editor = document.createElement('div');
+  editor.contentEditable = true;
+  editor.style.minHeight = '120px';
+  editor.style.padding = '20px';
+  editor.style.outline = 'none';
+  editor.style.fontSize = '16px';
+  editor.style.lineHeight = '1.6';
+  editor.innerHTML = localStorage.getItem(id) || '<span style="color:#aaa;">Escreve aqui as tuas notas...</span>';
+
+  // Salvar automaticamente
+  editor.addEventListener('input', () => {
+    if (editor.innerHTML.trim() === '' || editor.innerHTML === '<br>') {
+      editor.innerHTML = '<span style="color:#aaa;">Escreve aqui as tuas notas...</span>';
+    }
+    localStorage.setItem(id, editor.innerHTML);
+  });
+
+  // Foco = editor ativo
+  editor.addEventListener('focus', () => editorAtivo = editor);
+
+  // Limpar placeholder ao primeiro clique
+  editor.addEventListener('focus', function clearPlaceholder() {
+    if (this.innerHTML.includes('Escreve aqui')) this.innerHTML = '';
+    this.removeEventListener('focus', clearPlaceholder);
+  });
+
+  container.appendChild(editor);
+  document.getElementById('subContainer').prepend(container); // adiciona no topo
+}
+
+// Carregar notas ao abrir
+function carregarNotas() {
+  const lista = JSON.parse(localStorage.getItem('listaNotas') || '[]');
+  lista.reverse().forEach(nota => criarNota(nota.id, nota.nome)); // mais recentes primeiro
+}
+
+window.addEventListener('load', carregarNotas);
+</script>
+
+<style>
+  #toolbar button {
+    padding: 12px 18px;
+    margin: 0 6px;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  #toolbar button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  }
+</style>
+    <!-- Ficheiros -->
+    <div class="section" id="ficheiros">
+      <h1>Ficheiros</h1>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+        <input type="file" id="fileInput" multiple style="flex:1;">
+        <button id="newFolderBtn" style="background:#ffd700;color:#333;border:none;padding:8px 15px;border-radius:5px;cursor:pointer;">+ Nova Pasta</button>
+      </div>
+      <div id="fileBrowser" style="margin-top:10px;">
+        <h2 style="margin-bottom:5px;">Pastas</h2>
+        <div id="foldersContainer" style="display:flex;flex-direction:column;gap:10px;margin-bottom:15px;"></div>
+        <h2 style="margin-bottom:5px;">Arquivos</h2>
+        <div id="filesContainer" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+    </div>
+
+    <!-- Perfil -->
+    <div class="section" id="perfil">
+      <h1>Perfil</h1>
+      <center>
+        <img id="fotoPreview" src="https://via.placeholder.com/150?text=Sem+Foto" style="width:150px;height:150px;border-radius:50%;object-fit:cover;">
+        <br><br>
+        <input type="file" id="inputFoto" accept="image/*" onchange="previewFoto(event)">
+      </center>
+      <div class="campo"><label>Nome de utilizador</label><input type="text" id="nome"></div>
+      <div class="campo"><label>Email</label><input type="email" id="email"></div>
+      <div class="campo"><label>Telefone</label><input type="tel" id="telefone"></div>
+      <div class="campo"><label>Sexo</label>
+        <select id="sexo"><option value="">Selecionar</option><option>Masculino</option><option>Feminino</option><option>Outro</option></select>
+      </div>
+      <div class="campo"><label>Data de nascimento</label><input type="date" id="dataNasc" onchange="calcularIdade()"></div>
+      <div class="campo"><label>Idade</label><input type="text" id="idade" readonly></div>
+      <div class="campo"><label>Altura (cm)</label><input type="number" id="altura"></div>
+      <div class="campo"><label>Nacionalidade</label><input type="text" id="nacionalidade"></div>
+      <button class="btn-salvar" onclick="salvarPerfil()">Guardar Perfil</button>
+    </div>
+
+    <!-- Calculadora -->
+    <div class="section" id="calco">
+      <h1>Calculadora</h1>
+      <h2 style="text-align:center;">Calculadora</h2>
+      <div style="background:white; border-radius:16px; padding:20px; box-shadow:0 8px 25px rgba(0,0,0,0.12); max-width:400px; margin:20px auto;">
+        <div id="displayContainer" style="background:#000; color:#0f0; font-size:28px; padding:20px; border-radius:12px; text-align:right; margin-bottom:15px; min-height:60px; font-family:monospace; overflow-wrap:break-word; word-break:break-all;">
+          <div id="displayCalc">0</div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+          <button class="btnCalc op" onclick="limparCalc()">C</button>
+          <button class="btnCalc op" onclick="apagarUltimo()">⌫</button>
+          <button class="btnCalc op" onclick="adicionarCalc('/')">/</button>
+          <button class="btnCalc op" onclick="adicionarCalc('*')">×</button>
+          <button class="btnCalc" onclick="adicionarCalc('7')">7</button>
+          <button class="btnCalc" onclick="adicionarCalc('8')">8</button>
+          <button class="btnCalc" onclick="adicionarCalc('9')">9</button>
+          <button class="btnCalc op" onclick="adicionarCalc('-')">−</button>
+          <button class="btnCalc" onclick="adicionarCalc('4')">4</button>
+          <button class="btnCalc" onclick="adicionarCalc('5')">5</button>
+          <button class="btnCalc" onclick="adicionarCalc('6')">6</button>
+          <button class="btnCalc op" onclick="adicionarCalc('+')">+</button>
+          <button class="btnCalc" onclick="adicionarCalc('1')">1</button>
+          <button class="btnCalc" onclick="adicionarCalc('2')">2</button>
+          <button class="btnCalc" onclick="adicionarCalc('3')">3</button>
+          <button class="btnCalc eq" onclick="calcular()" style="grid-row:span 2;">=</button>
+          <button class="btnCalc" onclick="adicionarCalc('0')" style="grid-column:span 2;">0</button>
+          <button class="btnCalc" onclick="adicionarCalc('.')">.</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== CONFIGURAÇÕES ==================== -->
+<div class="section" id="config">
+  <h1 style="text-align:center; margin:40px 0 30px; font-size:28px;">Configurações</h1>
+
+  <div style="max-width:500px; margin:0 auto; background:white; border-radius:20px; padding:30px; box-shadow:0 8px 30px rgba(0,0,0,0.12);">
+
+    <!-- ALTERAR PALAVRA-PASSE -->
+    <h2 style="margin-bottom:20px; color:#444;">Alterar Palavra-passe</h2>
+    <input type="password" id="passAtual" placeholder="Palavra-passe atual" style="width:100%; padding:14px; margin:10px 0; border:1px solid #ddd; border-radius:12px; font-size:16px;">
+    <input type="password" id="passNova" placeholder="Nova palavra-passe" style="width:100%; padding:14px; margin:10px 0; border:1px solid #ddd; border-radius:12px; font-size:16px;">
+    <input type="password" id="passNova2" placeholder="Repetir nova palavra-passe" style="width:100%; padding:14px; margin:10px 0; border:1px solid #ddd; border-radius:12px; font-size:16px;">
+    
+    <button onclick="alterarPassword()" style="width:100%; background:#667eea; color:white; padding:14px; border:none; border-radius:12px; font-size:16px; cursor:pointer; margin-top:15px;">
+      Alterar Palavra-passe
+    </button>
+
+    <hr style="margin:40px 0; border:none; border-top:1px solid #eee;">
+
+    <!-- ELIMINAR CONTA -->
+    <h2 style="margin-bottom:20px; color:#e74c3c;">Zona de Perigo</h2>
+    <p style="color:#777; margin-bottom:20px;">
+      Ao eliminar a tua conta, <strong>todos os dados serão apagados permanentemente</strong>:<br>
+      notas, ficheiros, eventos, perfil, etc.
+    </p>
+
+    <button onclick="confirmarEliminarConta()" style="width:100%; background:#e74c3c; color:white; padding:16px; border:none; border-radius:12px; font-size:17px; font-weight:bold; cursor:pointer;">
+      Eliminar a minha conta para sempre
+    </button>
+  </div>
+</div>
+
+<script>
+// ===================== ALTERAR PALAVRA-PASSE =====================
+function alterarPassword() {
+  const atual = document.getElementById('passAtual').value;
+  const nova = document.getElementById('passNova').value;
+  const nova2 = document.getElementById('passNova2').value;
+
+  if (!atual || !nova || !nova2) {
+    return alert("Preenche todos os campos!");
+  }
+  if (nova !== nova2) {
+    return alert("As novas palavras-passe não coincidem!");
+  }
+  if (nova.length < 4) {
+    return alert("A nova palavra-passe deve ter pelo menos 4 caracteres.");
+    return;
+  }
+
+  // Carrega todos os usuários
+  let usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+  const logado = JSON.parse(localStorage.getItem('usuarioLogado'));
+
+  // Encontra o usuário atual
+  const indice = usuarios.findIndex(u => u.usuario === logado.usuario || u.email === logado.email);
+
+  if (indice === -1) return alert("Erro: utilizador não encontrado.");
+
+  // Verifica palavra-passe atual
+  if (usuarios[indice].senha !== atual) {
+    return alert("Palavra-passe atual incorreta!");
+  }
+
+  // Atualiza a palavra-passe
+  usuarios[indice].senha = nova;
+  localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+  // Atualiza também a sessão atual
+  logado.senha = nova;
+  localStorage.setItem('usuarioLogado', JSON.stringify(logado));
+
+  alert("Palavra-passe alterada com sucesso!");
+  document.getElementById('passAtual').value = '';
+  document.getElementById('passNova').value = '';
+  document.getElementById('passNova2').value = '';
+}
+
+// ===================== ELIMINAR CONTA =====================
+function confirmarEliminarConta() {
+  const confirma = prompt('Para confirmar, escreve: ELIMINAR MINHA CONTA', '');
+  
+  if (confirma !== 'ELIMINAR MINHA CONTA') {
+    return alert("Cancelado. A conta não foi eliminada.");
+  }
+
+  const logado = JSON.parse(localStorage.getItem('usuarioLogado'));
+  if (!logado) return alert("Nenhum utilizador logado.");
+
+  // 1. Remove o utilizador da lista de usuários
+  let usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+  usuarios = usuarios.filter(u => !(u.usuario === logado.usuario || u.email === logado.email));
+  localStorage.setItem('usuarios', JSON.stringify(usuarios));
+
+  // 2. Apaga TODOS os dados deste utilizador (notas, ficheiros, perfil, eventos…)
+  const chavesParaApagar = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('nota_') || 
+        key === 'listaNotas' || 
+        // notas
+        key === 'filesystem' ||           // ficheiros
+        key === 'perfil' ||               // perfil
+        key === 'calendarEvents' ||       // eventos
+        key === 'subList') {              // antigo bloco de notas
+      chavesParaApagar.push(key);
+    }
+  }
+  chavesParaApagar.forEach(k => localStorage.removeItem(k));
+
+  // 3. Desloga e volta ao login
+  localStorage.removeItem('usuarioLogado');
+  alert("A tua conta e todos os dados foram eliminados permanentemente.");
+  location.reload(); // recarrega para ir ao login
+}
+</script>
+
+<style>
+  #config input {
+    border-radius: 12px;
+    border: 1px solid #ddd;
+  }
+  #config button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  }
+</style>
+  </div> <!-- fim .home -->
+
+  <script>
+    // ==================== LOGIN / REGISTRO ====================
+    function getUsuarios() { return JSON.parse(localStorage.getItem('usuarios') || '[]'); }
+    function salvarUsuarios(u) { localStorage.setItem('usuarios', JSON.stringify(u)); }
+
+    function mostrarTela(id) {
+	  document.querySelectorAll('.container, .home').forEach(el => {
+		el.style.display = 'none';
+	  });
+	  const elemento = document.getElementById(id);
+	  if (elemento) {
+		elemento.style.display = (id === 'homePage') ? 'block' : 'flex';
+	  }
+	}
+
+    function criarConta() {
+      const nome = document.getElementById('regNome').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const usuario = document.getElementById('regUser').value.trim();
+      const senha = document.getElementById('regPass').value;
+      const senha2 = document.getElementById('regPass2').value;
+      if (senha !== senha2) return alert('Senhas não coincidem!');
+      if (!nome || !email || !usuario || !senha) return alert('Preencha todos os campos!');
+      const usuarios = getUsuarios();
+      if (usuarios.some(u => u.usuario === usuario || u.email === email)) return alert('Usuário ou e-mail já existe!');
+      usuarios.push({ nome, email, usuario, senha });
+      salvarUsuarios(usuarios);
+      alert('Conta criada com sucesso!');
+      mostrarTela('loginPage');
+    }
+
+    function fazerLogin() {
+      const entrada = document.getElementById('loginUser').value.trim();
+      const senha = document.getElementById('loginPass').value;
+      const user = getUsuarios().find(u => (u.usuario === entrada || u.email === entrada) && u.senha === senha);
+      if (user) {
+        localStorage.setItem('usuarioLogado', JSON.stringify(user));
+        document.getElementById('nomeUsuario').textContent = user.nome;
+        mostrarTela('homePage');
+      } else alert('Usuário ou senha incorretos!');
+    }
+
+    function recuperarSenha() {
+      const email = document.getElementById('recEmail').value.trim();
+      if (getUsuarios().some(u => u.email === email)) alert(`Link enviado para ${email}`);
+      else alert('E-mail não encontrado');
+    }
+
+    function fazerLogout() {
+      localStorage.removeItem('usuarioLogado');
+      mostrarTela('loginPage');
+    }
+
+    // ==================== MENU HAMBURGUER ====================
+    function toggleMenu() {
+      document.getElementById('hamburgerBtn').classList.toggle('active');
+      document.getElementById('sidebar').classList.toggle('open');
+      document.querySelector('.overlay').classList.toggle('active');
+    }
+    function fecharMenu() {
+      document.getElementById('hamburgerBtn').classList.remove('active');
+      document.getElementById('sidebar').classList.remove('open');
+      document.querySelector('.overlay').classList.remove('active');
+    }
+
+    // Navegação entre secções
+    document.querySelectorAll('.nav a[data-target]').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = this.getAttribute('data-target');
+        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById(target).classList.add('active');
+        fecharMenu();
+      });
+    });
+
+    // ==================== CARREGAR USUÁRIO LOGADO ====================
+    window.onload = () => {
+      const logado = localStorage.getItem('usuarioLogado');
+      if (logado) {
+        const user = JSON.parse(logado);
+        document.getElementById('nomeUsuario').textContent = user.nome;
+        mostrarTela('homePage');
+        carregarPerfil();
+      }
+      // Inicializa calendário, notas, ficheiros, etc.
+      renderCalendar(currentMonth, currentYear);
+      loadSubList().forEach(s => criarSubSecao(s.id, s.name));
+      renderFS();
+    };
+
+    // ==================== CALENDÁRIO ====================
+    const monthYear = document.getElementById('monthYear');
+    const calendarDays = document.getElementById('calendarDays');
+    const prevMonth = document.getElementById('prevMonth');
+    const nextMonth = document.getElementById('nextMonth');
+    const eventsUl = document.getElementById('events');
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    let selectedDate = null;
+
+    function loadEvents(){ return JSON.parse(localStorage.getItem('calendarEvents') || '{}'); }
+    function saveEvents(e){ localStorage.setItem('calendarEvents', JSON.stringify(e)); }
+
+    function renderEvents(dateStr){
+      const events = loadEvents();
+      eventsUl.innerHTML = '';
+      if(events[dateStr]){
+        events[dateStr].forEach((ev,i) => {
+          const li = document.createElementById('li');
+          li.className = 'event-item';
+          li.innerHTML = `<span>${ev}</span>
+                          <div>
+                            <button class="edit">Edit</button>
+                            <button class="delete">Delete</button>
+                          </div>`;
+          li.querySelector('.edit').onclick = () => {
+            const newEv = prompt("Editar evento:", ev);
+            if(newEv){
+              events[dateStr][i] = newEv;
+              saveEvents(events);
+              renderEvents(dateStr);
+              renderCalendar(currentMonth,currentYear);
+            }
+          };
+          li.querySelector('.delete').onclick = () => {
+            if(confirm("Apagar este evento?")){
+              events[dateStr].splice(i,1);
+              if(events[dateStr].length===0) delete events[dateStr];
+              saveEvents(events);
+              renderEvents(dateStr);
+              renderCalendar(currentMonth,currentYear);
+            }
+          };
+          eventsUl.appendChild(li);
+        });
+      }
+    }
+
+    function renderCalendar(month, year){
+      calendarDays.innerHTML = '';
+      monthYear.textContent = `${months[month]} ${year}`;
+      const firstDay = new Date(year, month, 1).getDay();
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      const events = loadEvents();
+
+      for(let i=0;i<firstDay;i++){
+        const empty = document.createElement('div');
+        calendarDays.appendChild(empty);
+      }
+
+      for(let d=1; d<=lastDate; d++){
+        const day = document.createElement('div');
+        day.textContent = d;
+        const dateStr = `${year}-${month+1}-${d}`;
+        const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+        if(isToday) day.classList.add('today');
+        if(events[dateStr]) day.classList.add('has-event');
+        day.onclick = () => {
+          selectedDate = dateStr;
+          const action = prompt("Escolhe: (1) Adicionar (2) Editar/Apagar");
+          if(action === "1"){
+            const evName = prompt(`Adicionar evento para ${dateStr}:`);
+            if(evName){
+              if(!events[selectedDate]) events[selectedDate] = [];
+              events[selectedDate].push(evName);
+              saveEvents(events);
+            }
+          }
+          renderEvents(selectedDate);
+          renderCalendar(currentMonth,currentYear);
+        };
+        calendarDays.appendChild(day);
+      }
+    }
+    const months = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+    prevMonth.onclick = () => { currentMonth--; if(currentMonth < 0){currentMonth = 11; currentYear--;} renderCalendar(currentMonth,currentYear); if(selectedDate) renderEvents(selectedDate); };
+    nextMonth.onclick = () => { currentMonth++; if(currentMonth > 11){currentMonth = 0; currentYear++;} renderCalendar(currentMonth,currentYear); if(selectedDate) renderEvents(selectedDate); };
+
+    // ==================== BLOCOS DE NOTAS ====================
+    const subContainer = document.getElementById('subContainer');
+    function loadSubList(){ return JSON.parse(localStorage.getItem('subList') || '[]'); }
+    function saveSubList(list){ localStorage.setItem('subList', JSON.stringify(list)); }
+
+    function novaSub(){
+      const name = prompt("Nome da nova subsecção:");
+      if(!name) return;
+      const id = 'sub_' + Date.now();
+      const subList = loadSubList();
+      subList.push({id,name});
+      saveSubList(subList);
+      criarSubSecao(id,name);
+    }
+
+    function criarSubSecao(id,name){
+      const div = document.createElement('div');
+      div.style.border='1px solid #fff';
+      div.style.marginBottom='10px';
+      div.style.padding='5px';
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.textContent = name;
+      toggleBtn.style.width='100%';
+      toggleBtn.style.background='#595959';
+      toggleBtn.style.color='white';
+      toggleBtn.style.padding='5px';
+      toggleBtn.style.marginBottom='5px';
+      toggleBtn.style.cursor='pointer';
+
+      const textarea = document.createElement('textarea');
+      textarea.style.width='100%';
+      textarea.style.height='80px';
+      textarea.placeholder = name;
+      textarea.style.display = 'none';
+
+      const saved = localStorage.getItem(id);
+      if(saved) textarea.value = saved;
+
+      textarea.addEventListener('input',()=>localStorage.setItem(id,textarea.value));
+
+      toggleBtn.onclick = ()=> {
+        textarea.style.display = (textarea.style.display==='none')?'block':'none';
+      }
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Eliminar';
+      deleteBtn.style.background='#c62828';
+      deleteBtn.style.color='white';
+      deleteBtn.style.marginTop='5px';
+      deleteBtn.onclick = ()=>{
+        subContainer.removeChild(div);
+        const subList = loadSubList().filter(s=>s.id!==id);
+        saveSubList(subList);
+        localStorage.removeItem(id);
+      }
+
+      div.appendChild(toggleBtn);
+      div.appendChild(textarea);
+      div.appendChild(deleteBtn);
+      subContainer.appendChild(div);
+    }
+
+    loadSubList().forEach(s=>criarSubSecao(s.id,s.name));
+
+    function toggle(id){
+      const el = document.getElementById(id);
+      el.style.display = (el.style.display==='none')?'block':'none';
+    }
+
+    // ==================== FICHEIROS ====================
+    let fs = JSON.parse(localStorage.getItem('filesystem') || '{}');
+    let currentPath = [];
+
+    function saveFS() { localStorage.setItem('filesystem', JSON.stringify(fs)); }
+    function getCurrentFolder() {
+      let folder = fs;
+      currentPath.forEach(p => { if (!folder[p]) folder[p] = {}; folder = folder[p]; });
+      return folder;
+    }
+
+    function renderFS() {
+      const foldersContainer = document.getElementById('foldersContainer');
+      const filesContainer = document.getElementById('filesContainer');
+      foldersContainer.innerHTML = '';
+      filesContainer.innerHTML = '';
+      const folder = getCurrentFolder();
+
+      if(currentPath.length > 0){
+        const backBtn = document.createElement('button');
+        backBtn.textContent = 'Back';
+        backBtn.className = 'backBtn';
+        backBtn.onclick = () => { currentPath.pop(); renderFS(); };
+        foldersContainer.appendChild(backBtn);
+      }
+
+      Object.keys(folder).forEach(name => {
+        const isFolder = typeof folder[name] === 'object';
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `<span class="name">${isFolder ? 'Folder' : 'File'} ${name}</span>`;
+        const btnContainer = document.createElement('div');
+
+        if(isFolder){
+          const openBtn = document.createElement('button'); openBtn.textContent='Abrir';
+          openBtn.onclick = () => { currentPath.push(name); renderFS(); };
+          btnContainer.appendChild(openBtn);
+        } else {
+          const openBtn = document.createElement('button'); openBtn.textContent='Abrir';
+          openBtn.onclick = () => {
+            const content = folder[name];
+            if(content.startsWith('data:')){
+              const w = window.open('');
+              w.document.write(`<iframe src="${content}" style="width:100%;height:100vh;" frameborder="0"></iframe>`);
+            } else alert(content);
+          };
+          btnContainer.appendChild(openBtn);
+        }
+
+        const delBtn = document.createElement('button'); delBtn.textContent='Eliminar';
+        delBtn.onclick = () => {
+          if(confirm(`Eliminar ${isFolder ? 'pasta' : 'ficheiro'} "${name}"?`)){
+            delete folder[name]; saveFS(); renderFS();
+          }
+        };
+        btnContainer.appendChild(delBtn);
+        div.appendChild(btnContainer);
+        if(isFolder) foldersContainer.appendChild(div);
+        else filesContainer.appendChild(div);
+      });
+    }
+
+    document.getElementById('newFolderBtn').onclick = () => {
+      const folderName = prompt('Nome da nova pasta:');
+      if(!folderName) return;
+      const folder = getCurrentFolder();
+      if(folder[folderName]){ alert('Já existe!'); return; }
+      folder[folderName] = {};
+      saveFS();
+      renderFS();
+    };
+
+    document.getElementById('fileInput').onchange = e => {
+      const files = e.target.files;
+      const folder = getCurrentFolder();
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          folder[file.name] = reader.result;
+          saveFS();
+          renderFS();
+        };
+        reader.readAsDataURL(file);
+      });
+    };
+    renderFS();
+
+    // ==================== PERFIL ====================
+    function previewFoto(event){
+      const reader = new FileReader();
+      reader.onload = () => { document.getElementById('fotoPreview').src = reader.result; };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+    function calcularIdade(){
+      const data = document.getElementById('dataNasc').value;
+      if(!data) return;
+      const hoje = new Date();
+      const nasc = new Date(data);
+      let idade = hoje.getFullYear() - nasc.getFullYear();
+      const m = hoje.getMonth() - nasc.getMonth();
+      if(m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) idade--;
+      document.getElementById('idade').value = idade;
+    }
+    function salvarPerfil(){
+      const perfil = {
+        foto: document.getElementById('fotoPreview').src,
+        nome: document.getElementById('nome').value,
+        email: document.getElementById('email').value,
+        telefone: document.getElementById('telefone').value,
+        sexo: document.getElementById('sexo').value,
+        dataNasc: document.getElementById('dataNasc').value,
+        idade: document.getElementById('idade').value,
+        altura: document.getElementById('altura').value,
+        nacionalidade: document.getElementById('nacionalidade').value
+      };
+      localStorage.setItem('perfil', JSON.stringify(perfil));
+      alert('Perfil guardado com sucesso!');
+    }
+    function carregarPerfil(){
+      const perfil = JSON.parse(localStorage.getItem('perfil'));
+      if(!perfil) return;
+      document.getElementById('fotoPreview').src = perfil.foto || "https://via.placeholder.com/150?text=Sem+Foto";
+      document.getElementById('nome').value = perfil.nome || '';
+      document.getElementById('email').value = perfil.email || '';
+      document.getElementById('telefone').value = perfil.telefone || '';
+      document.getElementById('sexo').value = perfil.sexo || '';
+      document.getElementBy('dataNasc').value = perfil.dataNasc || '';
+      document.getElementById('idade').value = perfil.idade || '';
+      document.getElementById('altura').value = perfil.altura || '';
+      document.getElementById('nacionalidade').value = perfil.nacionalidade || '';
+    }
+
+    // ==================== CALCULADORA ====================
+    let calcValor = '';
+    function adicionarCalc(val){
+      if(calcValor === '0') calcValor = '';
+      calcValor += val;
+      atualizarDisplay();
+    }
+    function limparCalc(){ calcValor = ''; atualizarDisplay(); }
+    function apagarUltimo(){ calcValor = calcValor.slice(0,-1); atualizarDisplay(); }
+    function calcular(){
+      try{
+        let resultado = eval(calcValor.replace(/×/g,'*').replace(/−/g,'-'));
+        calcValor = resultado.toString();
+        atualizarDisplay();
+      } catch(e){
+        calcValor = 'Erro';
+        atualizarDisplay();
+        calcValor = '';
+      }
+    }
+    function atualizarDisplay(){
+      document.getElementById('displayCalc').textContent = calcValor || '0';
+    }
+  </script>
+</body>
+</html>
