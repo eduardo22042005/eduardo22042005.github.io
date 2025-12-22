@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NubibusOne</title>
+<style>
+    body { margin:0; font-family:Arial, sans-serif; background:#f9f9f9; }
+    
+    header {
+        background:#000000;
+        color:white;
+        padding:15px 20px;
+        position:fixed;
+        top:0; left:0; width:100%;
+        height:60px;
+        box-sizing:border-box;
+        z-index:1001;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:bold;
+        font-size:22px;
+        box-shadow:0 3px 10px rgba(0,0,0,0.15);
+    }
+
+    .hamburger {
+        position:absolute;
+        left:18px;
+        width:28px;
+        height:20px;
+        cursor:pointer;
+    }
+    .hamburger span {
+        display:block;
+        width:100%;
+        height:4px;
+        background:#ffffff;
+        border-radius:3px;
+        transition:all 0.3s;
+    }
+    .hamburger span:nth-child(2) { margin:5px 0; }
+
+    .hamburger.active span:nth-child(1) { transform:rotate(45deg) translate(6px,6px); }
+    .hamburger.active span:nth-child(2) { opacity:0; }
+    .hamburger.active span:nth-child(3) { transform:rotate(-45deg) translate(7px,-7px); }
+
+    .container {
+        margin-top:60px;
+        min-height:calc(100vh - 60px);
+        display:flex;
+    }
+
+    nav {
+        width:270px;
+        background:white;
+        border-right:2px solid #eee;
+        padding:20px 0;
+        overflow-y:auto;
+        flex-shrink:0;
+        transition:transform 0.3s ease;
+    }
+    nav button {
+        width:100%;
+        padding:15px 22px;
+        text-align:left;
+        border:none;
+        background:#000000;
+        color:white;
+        font-weight:bold;
+        cursor:pointer;
+        font-size:15px;
+    }
+    nav button:hover { background:#ff5393; }
+
+    .sub {
+        margin:5px 0 5px 25px;
+        background:#ffd7e6;
+        color:#333;
+        font-weight:normal;
+        border:1px solid #ffb3cc;
+        border-radius:6px;
+        font-size:14px;
+    }
+    .sub:hover { background:#ffb3cc; }
+
+    .content {
+        flex:1;
+        padding:30px;
+        background:#f9f9f9;
+    }
+
+    @media (max-width: 768px) {
+        nav {
+            position:fixed;
+            top:60px;
+            left:0;
+            height:calc(100vh - 60px);
+            width:270px;
+            z-index:1000;
+            transform:translateX(-290px);
+            box-shadow:4px 0 15px rgba(0,0,0,0.2);
+        }
+        nav.show { transform:translateX(0); }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    NubibusOne
+</header>
+
+<div class="container">
+    <nav id="sidebar">
+
+        <button onclick="mostrarHome()">Home</button>
+		<button onclick="abrirMemoria()">Jogo da Memória</button>
+
+
+        <!-- U1 -->
+        <button onclick="toggle('u1')">Bloco de notas</button>
+        <div id="u1" style="display:none;">
+
+            <!-- BOTÃO PARA CRIAR SUBSECÇÕES -->
+            <button class="sub" style="background:#c8ffcf;" onclick="novaSub('u1')">+ Criar nova Subsecção</button>
+
+            <!-- Aqui entram as subsecções criadas -->
+            <div id="u1_custom"></div>
+        </div>
+
+        <!-- ADICIONA MAIS UNIDADES SE QUISERES -->
+
+        <button onclick="abrirFicheiros()">Ficheiros</button>
+    </nav>
+
+    <div class="content" id="content">
+        <h2 id="titulo">Bem-vinda Eduardo</h2>
+        <textarea id="notas" style="display:none; width:100%; height:80vh; padding:15px; font-size:16px; border-radius:8px; border:1px solid #ddd;" oninput="guardarNotas()">
+		</textarea>
+		
+		<div id="zonaMemoria" style="display:none;">
+			<h2 id="tituloMemoria">Jogo da Memória – Nível 1</h2>
+			<p>Tenta encontrar todos os pares.</p>
+			<div id="tabuleiro" 
+				 style="display:grid; gap:10px; margin-top:20px;">
+			</div>
+		</div>
+
+
+
+        <div id="zonaFicheiros" style="display:none;">
+            <h2 id="path"></h2>
+            <button onclick="criarPasta()">Criar Pasta</button>
+            <button onclick="voltar()" id="btnVoltar" style="display:none; margin-left:10px;">Voltar</button>
+            <hr style="margin:20px 0">
+            <input type="file" id="fileInput">
+            <button onclick="guardarFicheiro()">Guardar Ficheiro</button>
+            <hr style="margin:20px 0">
+			<h3>Pastas</h3>
+            <div id="listaPastas"></div>
+			<h3>Ficheiros</h3>
+            <div id="listaFicheiros"></div>
+        </div>
+		
+		<div id="zonaPerfil" style="display:none;">
+			<h2>Perfil do Utilizador</h2>
+
+			<label>Nome:</label>
+			<input id="perfilNome" type="text" style="width:100%; margin-bottom:10px;">
+
+			<label>Idade:</label>
+			<input id="perfilIdade" type="number" style="width:100%; margin-bottom:10px;">
+
+			<label>Sobre ti:</label>
+			<textarea id="perfilBio" style="width:100%; height:80px; margin-bottom:10px;"></textarea>
+
+			<label>Foto de Perfil:</label><br>
+			<input id="perfilFotoInput" type="file" accept="image/*"><br><br>
+
+			<img id="perfilFoto" src="" style="width:100px; height:100px; border-radius:50%; object-fit:cover; display:none; margin-bottom:10px;">
+
+			<button onclick="guardarPerfil()" style="padding:10px; width:100%;">Guardar</button>
+		</div>
+
+    </div>
+</div>
+
+<script>
+const nomesSec = {
+    "u1_s1": "Importância e Influência do Seguro",
+    "u1_s2": "Mercado Segurador UE",
+    "u1_s3": "Mercado Segurador Português",
+    "u1_s4": "Mercado Segurador e Ressegurador",
+    "u1_s5": "Competência Financeira"
+};
+
+// ========= MENU =========
+function toggleMenu() {
+    const sidebar = document.getElementById("sidebar");
+    const hamburger = document.getElementById("hamburger");
+    sidebar.classList.toggle("show");
+    hamburger.classList.toggle("active");
+}
+
+// ========= NOTAS =========
+let secAtual = "";
+
+// mostrar home
+function mostrarHome(){
+    secAtual="";
+    document.getElementById("titulo").textContent="Bem-vinda Amor";
+    document.getElementById("notas").style.display="none";
+    document.getElementById("zonaFicheiros").style.display="none";
+}
+
+function toggle(id){
+    const el = document.getElementById(id);
+    el.style.display = el.style.display==="block" ? "none" : "block";
+}
+
+function abrirSec(sec) {
+    secAtual = sec;
+
+    // tenta carregar nome personalizado
+    let lista = JSON.parse(localStorage.getItem("customSubs") || "{}");
+    let nomePersonalizado = "";
+
+    for (let unidade in lista) {
+        let found = lista[unidade].find(s => s.id === sec);
+        if (found) {
+            nomePersonalizado = found.nome;
+            break;
+        }
+    }
+
+    // se existir nome custom -> usa
+    // senão -> tenta nomesSec
+    // senão -> mostra o id (última opção, que agora é raríssimo)
+    document.getElementById("titulo").textContent =
+        "Notas – " + (nomePersonalizado || nomesSec[sec] || sec);
+
+    document.getElementById("notas").style.display = "block";
+    document.getElementById("zonaFicheiros").style.display = "none";
+    document.getElementById("notas").value = localStorage.getItem(secAtual) || "";
+}
+
+
+function guardarNotas(){
+    if(secAtual) localStorage.setItem(secAtual, document.getElementById("notas").value);
+}
+
+// ========== SUBSECÇÕES PERSONALIZADAS ==========
+
+function novaSub(unidade){
+    let nome = prompt("Nome da nova subsecção:");
+    if(!nome) return;
+
+    let id = unidade + "_custom_" + Date.now();
+
+    let lista = JSON.parse(localStorage.getItem("customSubs") || "{}");
+    if(!lista[unidade]) lista[unidade] = [];
+    lista[unidade].push({id, nome});
+    localStorage.setItem("customSubs", JSON.stringify(lista));
+
+    renderSub(unidade, id, nome);
+}
+
+// NOVA FUNÇÃO: apagar subsecção
+function apagarSubCustom(unidade, id, linha){
+    if(!confirm("Tens a certeza que queres apagar esta subsecção?")) return;
+
+    let lista = JSON.parse(localStorage.getItem("customSubs") || "{}");
+
+    if(lista[unidade]){
+        lista[unidade] = lista[unidade].filter(s => s.id !== id);
+    }
+
+    localStorage.setItem("customSubs", JSON.stringify(lista));
+
+    // apagar nota associada
+    localStorage.removeItem(id);
+
+    linha.remove();
+}
+
+// renderizar subsecção com botão [x]
+function renderSub(unidade, id, nome){
+    let box = document.getElementById(unidade + "_custom");
+
+    let linha = document.createElement("div");
+    linha.style.display = "flex";
+    linha.style.alignItems = "center";
+    linha.style.gap = "6px";
+    linha.style.margin = "4px 0";
+
+    let btn = document.createElement("button");
+    btn.className = "sub";
+    btn.style.flex = "1";
+    btn.textContent = nome;
+    btn.onclick = () => abrirSec(id);
+
+    let del = document.createElement("button");
+    del.textContent = "x";
+    del.style.background = "#ff4d4d";
+    del.style.color = "white";
+    del.style.border = "none";
+    del.style.padding = "6px 10px";
+    del.style.borderRadius = "5px";
+    del.style.cursor = "pointer";
+    del.onclick = (ev) => {
+        ev.stopPropagation();
+        apagarSubCustom(unidade, id, linha);
+    };
+
+    linha.appendChild(btn);
+    linha.appendChild(del);
+    box.appendChild(linha);
+}
+
+// carregar subsecções no arranque
+window.onload = () => {
+    let lista = JSON.parse(localStorage.getItem("customSubs") || "{}");
+
+    for(let unidade in lista){
+        lista[unidade].forEach(s => {
+            renderSub(unidade, s.id, s.nome);
+        });
+    }
+};
+
+// ========= SISTEMA DE FICHEIROS CORRIGIDO ==========
+
+let db;
+let caminho = [];
+
+const request = indexedDB.open("FormacaoDB", 3);
+
+request.onupgradeneeded = e => {
+    db = e.target.result;
+    if (!db.objectStoreNames.contains("ficheiros")) {
+        db.createObjectStore("ficheiros", {keyPath:"id", autoIncrement:true});
+    }
+};
+
+request.onsuccess = e => {
+    db = e.target.result;
+    carregarPastas();
+    carregarFicheiros();
+};
+
+request.onerror = e => {
+    console.error("Erro ao abrir IndexedDB", e);
+};
+
+function abrirFicheiros(){
+    document.getElementById("titulo").textContent="Ficheiros";
+    document.getElementById("notas").style.display="none";
+    document.getElementById("zonaFicheiros").style.display="block";
+    atualizarPath(); 
+    carregarPastas(); 
+    carregarFicheiros();
+}
+
+function atualizarPath(){
+    document.getElementById("path").textContent = "Ficheiros" + (caminho.length ? " / "+caminho.join(" / ") : "");
+    document.getElementById("btnVoltar").style.display = caminho.length?"inline-block":"none";
+}
+
+function criarPasta(){
+    if(!db) return alert("Base de dados ainda não pronta");
+    let nome = prompt("Nome da pasta:");
+    if(!nome) return;
+
+    const tx = db.transaction("ficheiros","readwrite").objectStore("ficheiros");
+    const requestAdd = tx.add({nome, pasta:true, caminho:[...caminho], dados:null});
+    requestAdd.onsuccess = () => {
+        carregarPastas();
+    };
+}
+
+function abrirPasta(n){
+    caminho.push(n); 
+    atualizarPath(); 
+    carregarPastas(); 
+    carregarFicheiros(); 
+}
+
+function voltar(){
+    caminho.pop(); 
+    atualizarPath(); 
+    carregarPastas(); 
+    carregarFicheiros(); 
+}
+
+function guardarFicheiro(){
+    if(!db) return alert("Base de dados ainda não pronta");
+
+    let file = document.getElementById("fileInput").files[0];
+    if(!file) return alert("Escolhe um ficheiro");
+
+    let r = new FileReader();
+    r.onload = () => {
+        const tx = db.transaction("ficheiros","readwrite").objectStore("ficheiros");
+        const requestAdd = tx.add({
+            nome: file.name,
+            pasta: false,
+            caminho: [...caminho],
+            dados: r.result
+        });
+        requestAdd.onsuccess = () => {
+            carregarFicheiros();
+        };
+    };
+
+    // Se for texto (.txt ou .md) lê como texto, senão lê como dataURL
+    if(file.name.endsWith(".txt") || file.name.endsWith(".md")){
+        r.readAsText(file);
+    } else {
+        r.readAsDataURL(file);
+    }
+}
+
+function carregarPastas(){
+    if(!db) return;
+
+    let lista = document.getElementById("listaPastas");
+    lista.innerHTML = "";
+
+    const tx = db.transaction("ficheiros","readonly").objectStore("ficheiros");
+    tx.openCursor().onsuccess = e => {
+        let cursor = e.target.result;
+        if(cursor){
+            let item = cursor.value;
+            if(item.pasta && JSON.stringify(item.caminho) === JSON.stringify(caminho)){
+                let div = document.createElement("div");
+                div.style.display = "flex";
+                div.style.justifyContent = "space-between";
+                div.style.marginBottom = "5px";
+
+                let btn = document.createElement("button");
+                btn.textContent = item.nome;
+                btn.onclick = () => abrirPasta(item.nome);
+
+                let del = document.createElement("button");
+                del.textContent = "Apagar";
+                del.onclick = (ev) => { ev.stopPropagation(); apagar(item.id); carregarPastas(); };
+
+                div.appendChild(btn);
+                div.appendChild(del);
+                lista.appendChild(div);
+            }
+            cursor.continue();
+        }
+    };
+}
+
+function carregarFicheiros(){
+    if(!db) return;
+
+    let lista = document.getElementById("listaFicheiros");
+    lista.innerHTML = "";
+
+    const tx = db.transaction("ficheiros","readonly").objectStore("ficheiros");
+    tx.openCursor().onsuccess = e => {
+        let cursor = e.target.result;
+        if(cursor){
+            let item = cursor.value;
+            if(!item.pasta && JSON.stringify(item.caminho) === JSON.stringify(caminho)){
+                let div = document.createElement("div");
+                div.style.display = "flex";
+                div.style.justifyContent = "space-between";
+                div.style.marginBottom = "5px";
+
+                let btn = document.createElement("button");
+                btn.textContent = item.nome;
+                btn.onclick = () => abrirFicheiro(item);
+
+                let del = document.createElement("button");
+                del.textContent = "Apagar";
+                del.onclick = () => { apagar(item.id); carregarFicheiros(); };
+
+                div.appendChild(btn);
+                div.appendChild(del);
+                lista.appendChild(div);
+            }
+            cursor.continue();
+        }
+    };
+}
+
+function abrirFicheiro(item){
+    if(item.nome.endsWith(".txt") || item.nome.endsWith(".md")){
+        document.getElementById("notas").style.display = "block";
+        document.getElementById("zonaFicheiros").style.display = "none";
+        document.getElementById("notas").value = item.dados;
+        document.getElementById("titulo").textContent = "Ficheiro – " + item.nome;
+    } else {
+        let win = window.open();
+        win.document.write(`<iframe src="${item.dados}" style="width:100%; height:100vh;"></iframe>`);
+    }
+}
+
+function apagar(id){
+    if(!db) return;
+    if(!confirm("Tens a certeza que queres apagar este item?")) return;
+    const tx = db.transaction("ficheiros","readwrite").objectStore("ficheiros");
+    tx.delete(id).onsuccess = () => {
+        carregarPastas();
+        carregarFicheiros();
+    };
+}
+
+// ========== JOGO DA MEMÓRIA COM EMOJIS + NÍVEIS ==========
+
+let nivel = parseInt(localStorage.getItem("nivelMemoria") || "1");
+let primeira = null;
+let bloquear = false;
+
+const todosEmojis = ["😀","😎","😍","🥶","🤯","👻","🐱","🐶","🐸","🐵",
+                     "🍎","🍌","🍇","🥐","🍕","🥑","⚽","🏀","🎮","🎲"];
+
+function abrirMemoria(){
+    document.getElementById("titulo").textContent="";
+    document.getElementById("notas").style.display="none";
+    document.getElementById("zonaFicheiros").style.display="none";
+    document.getElementById("zonaMemoria").style.display="block";
+
+    iniciarNivel();
+}
+
+function iniciarNivel(){
+    document.getElementById("tituloMemoria").textContent = 
+        "Jogo da Memória – Nível " + nivel;
+
+    const tabuleiro = document.getElementById("tabuleiro");
+    tabuleiro.innerHTML = "";
+
+    // número de pares aumenta com o nível (máx 10)
+    let pares = Math.min(3 + nivel, 10);
+
+    let selecionados = embaralhar(todosEmojis)
+                        .slice(0, pares);
+
+    let cartas = embaralhar([...selecionados, ...selecionados]);
+
+    // definição do grid
+    let lado = Math.ceil(Math.sqrt(cartas.length));
+    tabuleiro.style.gridTemplateColumns = `repeat(${lado}, 1fr)`;
+
+    cartas.forEach(e => criarCarta(e, tabuleiro));
+}
+
+function criarCarta(emoji, tabuleiro){
+    let div = document.createElement("div");
+    div.textContent = "❔";
+    div.dataset.valor = emoji;
+    div.style.background = "#ffe6f0";
+    div.style.fontSize = "30px";
+    div.style.padding = "20px";
+    div.style.textAlign = "center";
+    div.style.borderRadius = "10px";
+    div.style.cursor = "pointer";
+    div.style.userSelect = "none";
+    div.style.transition = "0.2s";
+
+    div.onclick = () => virar(div);
+
+    tabuleiro.appendChild(div);
+}
+
+function virar(carta){
+    if(bloquear) return;
+    if(carta.classList.contains("virada")) return;
+
+    carta.textContent = carta.dataset.valor;
+    carta.classList.add("virada");
+
+    if(!primeira){
+        primeira = carta;
+    } else {
+        // comparar
+        if(primeira.dataset.valor === carta.dataset.valor){
+            // par encontrado
+            primeira = null;
+
+            // verificar se o nível acabou
+            if(document.querySelectorAll(".virada").length === 
+               document.querySelectorAll("#tabuleiro div").length){
+                
+                setTimeout(() => {
+                    alert("Completo! Avançaste para o próximo nível.");
+                    nivel++;
+                    localStorage.setItem("nivelMemoria", nivel);
+                    iniciarNivel();
+                }, 300);
+            }
+
+        } else {
+            // errado -> virar para trás
+            bloquear = true;
+            setTimeout(() => {
+                carta.textContent = "❔";
+                carta.classList.remove("virada");
+
+                primeira.textContent = "❔";
+                primeira.classList.remove("virada");
+
+                primeira = null;
+                bloquear = false;
+            }, 700);
+        }
+    }
+}
+
+function embaralhar(arr){
+    return arr.sort(() => Math.random() - 0.5);
+}
+// ========== PERFIL DO UTILIZADOR (LOCALSTORAGE) ==========
+
+function abrirPerfil(){
+    esconderAbas();
+    document.getElementById("zonaPerfil").style.display = "block";
+    carregarPerfil();
+}
+
+function esconderAbas(){
+    const abas = ["zonaFicheiros", "notas", "zonaMemoria", "zonaPerfil"];
+    abas.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.style.display = "none";
+    });
+}
+
+function guardarPerfil(){
+    const nome = document.getElementById("perfilNome").value;
+    const idade = document.getElementById("perfilIdade").value;
+    const bio = document.getElementById("perfilBio").value;
+    const foto = document.getElementById("perfilFoto").src || "";
+
+    const dados = {
+        nome,
+        idade,
+        bio,
+        foto
+    };
+
+    localStorage.setItem("perfilUsuario", JSON.stringify(dados));
+    alert("Perfil guardado com sucesso.");
+}
+
+function carregarPerfil(){
+    const dados = JSON.parse(localStorage.getItem("perfilUsuario"));
+
+    if(!dados) return;
+
+    document.getElementById("perfilNome").value = dados.nome || "";
+    document.getElementById("perfilIdade").value = dados.idade || "";
+    document.getElementById("perfilBio").value = dados.bio || "";
+
+    if(dados.foto){
+        const img = document.getElementById("perfilFoto");
+        img.src = dados.foto;
+        img.style.display = "block";
+    }
+}
+
+// converter imagem para Base64
+document.getElementById("perfilFotoInput").addEventListener("change", function(){
+    const file = this.files[0];
+    if(!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e){
+        const img = document.getElementById("perfilFoto");
+        img.src = e.target.result;
+        img.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+});
+
+
+</script>
+</body>
+</html>
