@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HaloDesk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/main.min.css" rel="stylesheet">
+    <style>
+        body { background: #f4f6f9; font-family: 'Segoe UI', sans-serif; }
+        .card { cursor: pointer; transition: all 0.3s; height: 140px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; border-radius: 12px; }
+        .card-login { cursor: pointer; transition: all 0.3s; height: 290px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .card-config {
+			cursor: pointer;
+			transition: all 0.3s;
+			height: 155px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.1rem;
+			border-radius: 12px;
+		}
+		.card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important; }
+        .profile-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #007bff; }
+        .hidden { display: none !important; }
+        .breadcrumb { background: none; padding: 0; margin: 0; }
+        .file-item { padding: 12px; background: white; margin: 8px 0; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
+     
+        /* Relógio dentro do card */
+        #clock-card .clock-display {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            min-width: 140px;
+        }
+        #clock-card .clock-display .time {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        #clock-card .clock-display .date {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+        /* Estilo do calendário */
+        #calendar-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        /* Horizon - Navegador */
+        #horizon-search-container {
+            max-width: 700px;
+            margin: 40px auto 20px;
+        }
+        #horizon-input {
+            font-size: 1.5rem;
+            padding: 16px 24px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        #horizon-placeholder {
+            height: 70vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 12px;
+            color: #6c757d;
+        }
+        #horizon-placeholder i {
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+        .history-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        .history-item:hover {
+            background: #f0f0f0;
+        }
+        /* Editor de Código Melhorado */
+        #code-editor {
+            width: 100%;
+            height: 70vh;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            line-height: 1.5;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+        }
+        /* Ícone de apagar */
+        .delete-icon {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+        .delete-icon:hover { opacity: 1; }
+		
+		#config-btn {
+  position: fixed;   /* Fixa o botão na tela */
+  right: 20px;        /* Distância da borda esquerda */
+  top: 20px;         /* Distância do topo (ajuste conforme necessário) */
+  --bs-btn-bg: #8f8f93;
+  --bs-btn-border-color: #000000;
+}
+    </style>
+</head>
+<body>
+<!-- Chatling Chatbot -->
+<script> window.chtlConfig = { chatbotId: "1824162422" } </script>
+<script async data-id="1824162422" id="chtl-script" src="https://chatling.ai/js/embed.js"></script>
+<div class="container py-5">
+    <!-- ==================== LOGIN ==================== -->
+    <div id="login-page" class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card-login shadow">
+                <div class="card-body">
+                    <h3 class="text-center mb-4">Login</h3>
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="login-user" placeholder="Usuário" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="login-pass" placeholder="Senha" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                    </form>
+                    <p class="text-center mt-3">Não tens conta? <a href="#" id="go-register">Regista-te</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ==================== REGISTO ==================== -->
+    <div id="register-page" class="row justify-content-center hidden">
+        <div class="col-md-4">
+            <div class="card-login shadow">
+                <div class="card-body">
+                    <h3 class="text-center mb-4">Criar Conta</h3>
+                    <form id="register-form">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="reg-user" placeholder="Usuário" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="reg-pass" placeholder="Senha" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Registar</button>
+                    </form>
+                    <p class="text-center mt-3"><a href="#" id="go-login">Já tens conta? Faz login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ==================== DASHBOARD ==================== -->
+    <div id="dashboard-page" class="hidden">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Bem-vindo, <span id="username-display"></span>!</h2>
+			<button id="config-btn" class="btn btn-danger">⚙️</button>
+            <button id="logout-btn" class="btn btn-danger">Sair</button>
+        </div>
+        <div class="row g-4">
+            <!-- Perfil -->
+            <div class="col-md-3">
+                <div class="text-center">
+                    <img src="" alt="Perfil" id="profile-img" class="profile-img mb-3">
+                    <h4 id="profile-name"></h4>
+                    <button class="btn btn-outline-primary btn-sm" id="change-photo-btn">Alterar foto</button>
+                    <input type="file" id="photo-input" accept="image/*" class="hidden">
+                </div>
+            </div>
+            <!-- Coluna do meio -->
+            <div class="col-md-6">
+                <div class="row g-4">
+                    <div class="col-12"><div class="card bg-primary text-white text-center" data-page="editor"><h4><i class="fas fa-code"></i> Editor de Código</h4></div></div>
+                    <div class="col-6"><div class="card bg-info text-white text-center" data-page="files"><h5><i class="fas fa-folder"></i> Ficheiros</h5></div></div>
+                    <div class="col-6"><div class="card bg-warning text-dark text-center" data-page="notes"><h5><i class="fas fa-sticky-note"></i> Bloco de Notas</h5></div></div>
+                    <div class="col-12"><div class="card bg-secondary text-white text-center" data-page="clock">
+                        <div class="clock-widget">
+                            <div class="time" id="clock-time"></div>
+                            <div class="date" id="clock-date"></div>
+                        </div></div></div>
+                </div>
+            </div>
+            <!-- Coluna direita -->
+            <div class="col-md-3">
+                <div class="row g-4">
+                    <div class="col-12"><div class="card bg-success text-white text-center" data-page="chatbot"><h5><i class="fas fa-robot"></i>Horizon</h5></div></div>
+                    <div class="col-12"><div class="card bg-dark text-white text-center" data-page="calendar"><h5><i class="fas fa-calendar-alt"></i> Calendário</h5></div></div>
+                    <div class="col-12"><div class="card bg-danger text-white text-center" data-page="events"><h5><i class="fas fa-calendar-check"></i> Eventos</h5></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ==================== ÁREA DE FICHEIROS ==================== -->
+    <div id="files-page" class="hidden">
+        <h2><i class="fas fa-folder-open"></i> Ficheiros</h2>
+        <button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+        <div class="mb-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb" id="breadcrumb"></ol>
+            </nav>
+        </div>
+        <button class="btn btn-success mb-3" id="new-folder-btn"><i class="fas fa-folder-plus"></i> Nova Pasta</button>
+        <button class="btn btn-primary mb-3 ms-2" id="upload-btn"><i class="fas fa-upload"></i> Upload</button>
+        <input type="file" id="file-input" multiple class="hidden">
+        <div id="files-list" class="mt-4"></div>
+    </div>
+    <!-- ==================== EDITOR DE CÓDIGO MELHORADO ==================== -->
+    <div id="editor-page" class="hidden">
+        <h2>Editor de Código</h2>
+        <button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+            <button id="open-code-btn" class="btn btn-info"><i class="fas fa-folder-open"></i> Abrir ficheiro</button>
+            <button id="save-code-btn" class="btn btn-success"><i class="fas fa-download"></i> Guardar como...</button>
+            <button id="preview-code-btn" class="btn btn-primary"><i class="fas fa-eye"></i> Pré-visualizar</button>
+            <input type="file" id="code-file-input" accept=".html,.js,.css,.txt,text/html,text/javascript,text/css" class="hidden">
+        </div>
+        <textarea id="code-editor" class="mt-3"></textarea>
+    </div>
+    <div id="notes-page" class="hidden">
+        <h2>Bloco de Notas</h2>
+        <button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+        <textarea class="form-control" rows="20" id="notes-text"></textarea>
+    </div>
+    <div id="clock-page" class="hidden">
+        <h2 class="display-1 text-center" id="big-clock"></h2>
+        <button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+        <p class="text-center display-6" id="big-date"></p>
+    </div>
+    <!-- ==================== CALENDÁRIO ==================== -->
+    <div id="calendar-page" class="hidden">
+        <h2>Calendário</h2>
+        <button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+        <div id="calendar-container">
+            <div id="full-calendar"></div>
+        </div>
+    </div>
+    <div id="events-page" class="hidden">
+        <h2>Eventos</h2>
+        <p>Em breve...</p>
+        <button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+    </div>
+    <!-- ==================== HORIZON - NAVEGADOR ==================== -->
+    <div id="chatbot-page" class="hidden">
+        <h2 class="text-center">Horizon</h2>
+        <button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+        <div id="horizon-search-container" class="text-center">
+            <form id="horizon-form" class="d-flex gap-2 justify-content-center flex-wrap">
+                <input type="text" id="horizon-input" class="form-control" placeholder="Pesquisar na web..." autocomplete="off">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-search"></i></button>
+            </form>
+            <div class="mt-4">
+                <small class="text-muted">Histórico:</small>
+                <button id="clear-history" class="btn btn-outline-danger btn-sm ms-2">Limpar</button>
+                <div id="history-list" class="mt-2 text-start"></div>
+            </div>
+        </div>
+        <div id="horizon-placeholder">
+            <i class="fas fa-search"></i>
+            <p class="fs-3">Faça uma pesquisa para abrir no Google</p>
+        </div>
+    </div>
+	
+	<!-- ==================== CONFIGURAÇÕES DA CONTA ==================== -->
+	<div id="settings-page" class="hidden">
+		<h2><i class="fas fa-cog"></i> Configurações da Conta</h2>
+		<button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+		<br>
+		<button id="perfil-btn" class="btn btn-primary w-100">Perfil</button>
+		<br>
+		<div class="row justify-content-center mt-4">
+			<div class="col-md-6">
+				<div class="card-login shadow">
+					<div class="card-body">
+						<h4 class="card-title">Alterar Palavra-Passe</h4>
+						<br>
+						<form id="change-password-form">
+							<div class="mb-3">
+								<label for="current-pass" class="form-label">Palavra-passe atual</label>
+								<input type="password" class="form-control" id="current-pass" required>
+							</div>
+							<div class="mb-3">
+								<label for="new-pass" class="form-label">Nova palavra-passe</label>
+								<input type="password" class="form-control" id="new-pass" required>
+							</div>
+							<div class="mb-3">
+								<label for="confirm-pass" class="form-label">Confirmar nova palavra-passe</label>
+								<input type="password" class="form-control" id="confirm-pass" required>
+							</div>
+							<button type="submit" class="btn btn-primary w-100">Alterar Palavra-Passe</button>
+						</form>
+					</div>
+				</div>
+				<br>
+				<div class="card-config shadow mt-4">
+					<div class="card-body">
+						<h4 class="card-title text-danger">Apagar Conta</h4>
+						<p class="text-muted">Esta ação é irreversível. Todos os teus dados (ficheiros, notas, calendário, etc.) serão apagados permanentemente.</p>
+						<button id="delete-account-btn" class="btn btn-danger">Apagar a minha conta</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- ==================== PERFIL DO UTILIZADOR ==================== -->
+	<div id="profile-page" class="hidden">
+		<h2><i class="fas fa-user"></i> Meu Perfil</h2>
+		<button class="btn btn-secondary mt-3" data-back>← Voltar</button>
+
+		<div class="row justify-content-center mt-4">
+			<div class="col-lg-8 col-xl-6">
+				<div class="card shadow">
+					<div class="card-body p-4">
+
+						<!-- Foto de perfil (grande) -->
+						<div class="text-center mb-4">
+							<img src="" alt="Foto de Perfil" id="profile-img-big" class="rounded-circle border border-primary" 
+								 style="width: 140px; height: 140px; object-fit: cover;">
+							<br><br>
+							<button class="btn btn-outline-primary btn-sm" id="change-photo-btn-big">Alterar Foto</button>
+						</div>
+
+						<form id="profile-form">
+							<div class="row g-3">
+								<div class="col-md-6">
+									<label class="form-label">Nome Completo</label>
+									<input type="text" class="form-control" id="full-name" placeholder="Ex: João Silva Santos">
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Nacionalidade</label>
+									<input type="text" class="form-control" id="nationality" placeholder="Ex: Portuguesa">
+								</div>
+
+								<div class="col-md-6">
+									<label class="form-label">Data de Nascimento</label>
+									<input type="date" class="form-control" id="birth-date">
+								</div>
+								<div class="col-md-6">
+									<label class="form-label">Idade <small class="text-muted">(calculada automaticamente)</small></label>
+									<input type="text" class="form-control bg-light" id="age" readonly>
+								</div>
+
+								<div class="col-md-6">
+									<label class="form-label">Sexo</label>
+									<select class="form-select" id="gender">
+										<option value="">Selecionar...</option>
+										<option value="Masculino">Masculino</option>
+										<option value="Feminino">Feminino</option>
+										<option value="Outro">Outro</option>
+										<option value="Prefiro não dizer">Prefiro não dizer</option>
+									</select>
+								</div>
+
+								<div class="col-md-6">
+									<label class="form-label">Altura (cm)</label>
+									<input type="number" class="form-control" id="height" placeholder="Ex: 175" min="100" max="250">
+								</div>
+
+								<div class="col-md-6">
+									<label class="form-label">Telemóvel</label>
+									<input type="tel" class="form-control" id="phone" placeholder="Ex: 912 345 678">
+								</div>
+
+								<div class="col-md-6">
+									<label class="form-label">Email</label>
+									<input type="email" class="form-control" id="email" placeholder="exemplo@email.com">
+								</div>
+							</div>
+
+							<hr class="my-4">
+
+							<div class="d-grid">
+								<button type="submit" class="btn btn-success btn-lg">
+									<i class="fas fa-save"></i> Guardar Alterações
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+<script>
+/* ============== AUTENTICAÇÃO ============== */
+const usersKey = 'dashboard_users';
+let currentUser = null;
+let currentPath = [];
+let calendar = null;
+
+function getUsers() {
+    return JSON.parse(localStorage.getItem(usersKey) || '[]');
+}
+function saveUserData(key, data) {
+    localStorage.setItem(`user_${currentUser}_${key}`, JSON.stringify(data));
+}
+function getUserData(key, def) {
+    return JSON.parse(localStorage.getItem(`user_${currentUser}_${key}`) || JSON.stringify(def));
+}
+
+/* Registo */
+document.getElementById('register-form').onsubmit = e => {
+    e.preventDefault();
+    const user = document.getElementById('reg-user').value.trim();
+    const pass = document.getElementById('reg-pass').value;
+    if (!user || !pass) return alert('Preenche tudo!');
+    let users = getUsers();
+    if (users.some(u => u.user === user)) return alert('Usuário já existe!');
+    users.push({user, pass});
+    localStorage.setItem(usersKey, JSON.stringify(users));
+    currentUser = user;
+    saveUserData('files', {name: 'root', type: 'folder', children: []});
+    saveUserData('photo', '');
+    saveUserData('notes', '');
+    saveUserData('calendar_events', []);
+    saveUserData('horizon_history', []);
+    saveUserData('code_editor_content', '<!DOCTYPE html>\n<html>\n<head>\n <title>Novo Projeto</title>\n</head>\n<body>\n <h1>Olá, mundo!</h1>\n</body>\n</html>');
+    alert('Registado com sucesso!');
+    document.getElementById('reg-user').value = '';
+    document.getElementById('reg-pass').value = '';
+    showPage('login-page');
+};
+
+/* Login */
+document.getElementById('login-form').onsubmit = e => {
+    e.preventDefault();
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    const users = getUsers();
+    const found = users.find(u => u.user === user && u.pass === pass);
+    if (!found) return alert('Usuário ou senha errada');
+    currentUser = user;
+    document.getElementById('username-display').textContent = user;
+    document.getElementById('profile-name').textContent = user;
+    const photo = getUserData('photo', '');
+    document.getElementById('profile-img').src = photo || 'https://via.placeholder.com/120?text=' + user[0].toUpperCase();
+    showPage('dashboard-page');
+    updateClock();
+};
+
+/* Foto de perfil */
+document.getElementById('change-photo-btn').onclick = () => document.getElementById('photo-input').click();
+document.getElementById('photo-input').onchange = e => {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const dataUrl = ev.target.result;
+            document.getElementById('profile-img').src = dataUrl;
+            saveUserData('photo', dataUrl);
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+/* Navegação */
+function showPage(id) {
+    document.querySelectorAll('#login-page, #register-page, #dashboard-page, [id$="-page"]').forEach(el => el.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    if (id === 'calendar-page') {
+        initCalendar();
+    } else if (calendar) {
+        calendar.destroy();
+        calendar = null;
+    }
+    if (id === 'chatbot-page') {
+        loadHorizonHistory();
+    }
+    if (id === 'editor-page') {
+        loadCodeEditor();
+    }
+    if (id === 'files-page') {
+        currentPath = []; // Reset path ao abrir ficheiros para evitar bugs
+        loadFiles();
+    }
+}
+document.getElementById('go-register').onclick = () => showPage('register-page');
+document.getElementById('go-login').onclick = () => showPage('login-page');
+document.getElementById('logout-btn').onclick = () => { currentUser = null; showPage('login-page'); };
+document.querySelectorAll('.card[data-page]').forEach(card => {
+    card.onclick = () => showPage(card.dataset.page + '-page');
+});
+document.querySelectorAll('[data-back]').forEach(btn => {
+    btn.onclick = () => showPage('dashboard-page');
+});
+
+/* ------------------------------
+   SISTEMA DE FICHEIROS - OPÇÃO B
+------------------------------ */
+
+let currentFolderId = 0; // 0 será sempre root
+let fileDB = getUserData('fileDB', [
+    { id: 0, name: 'root', type: 'folder', parent: null } // root
+]);
+
+/* ------------------ Helpers ------------------ */
+function getUserData(key, defaultValue) {
+    const data = localStorage.getItem(key);
+    if (!data) return defaultValue;
+    try { return JSON.parse(data); } catch { return defaultValue; }
+}
+
+function saveUserData(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getFolderChildren(parentId) {
+    return fileDB.filter(f => f.parent === parentId);
+}
+
+function getFolder(id) {
+    return fileDB.find(f => f.id === id);
+}
+
+/* ------------------ Breadcrumb ------------------ */
+function renderBreadcrumb() {
+    const bc = document.getElementById('breadcrumb');
+    bc.innerHTML = '';
+
+    let path = [];
+    let current = getFolder(currentFolderId);
+    while(current) {
+        path.unshift(current);
+        current = getFolder(current.parent);
+    }
+
+    path.forEach((f, idx) => {
+        const li = document.createElement('li');
+        li.className = 'breadcrumb-item';
+
+        const a = document.createElement('a');
+        a.href = '#';
+        a.textContent = f.name;
+        a.onclick = () => {
+            currentFolderId = f.id;
+            loadFiles();
+        };
+
+        li.appendChild(a);
+        bc.appendChild(li);
+    });
+}
+
+/* ------------------ Load Files ------------------ */
+function loadFiles() {
+    const list = document.getElementById('files-list');
+    list.innerHTML = '';
+    renderBreadcrumb();
+
+    const children = getFolderChildren(currentFolderId);
+
+    children.forEach(child => {
+        const div = document.createElement('div');
+        div.className = 'file-item shadow-sm';
+        div.style.cursor = 'pointer';
+
+        if (child.type === 'folder') {
+            div.innerHTML = `<i class="fas fa-folder text-warning me-2"></i> <strong>${child.name}</strong> 
+                             <i class="fas fa-trash delete-icon float-end" title="Apagar pasta"></i>`;
+            div.onclick = e => {
+                if(e.target.classList.contains('delete-icon')) return;
+                currentFolderId = child.id;
+                loadFiles();
+            };
+        } else if (child.type === 'file') {
+            div.innerHTML = `<i class="fas fa-file text-primary me-2"></i> ${child.name} 
+                             <a href="${child.content}" download="${child.name}" class="float-end text-success me-4">
+                                <i class="fas fa-download"></i>
+                             </a>
+                             <i class="fas fa-trash delete-icon float-end me-2" title="Apagar ficheiro"></i>`;
+        }
+
+        const trash = div.querySelector('.delete-icon');
+        if(trash) {
+            trash.onclick = e => {
+                e.stopPropagation();
+                if(confirm(`Apagar "${child.name}"?`)) {
+                    // Remove filhos recursivamente se pasta
+                    if(child.type === 'folder') deleteFolderRecursive(child.id);
+                    else fileDB = fileDB.filter(f => f.id !== child.id);
+
+                    saveUserData('fileDB', fileDB);
+                    loadFiles();
+                }
+            };
+        }
+
+        list.appendChild(div);
+    });
+}
+
+/* ------------------ Delete Folder Recursively ------------------ */
+function deleteFolderRecursive(folderId) {
+    const children = getFolderChildren(folderId);
+    children.forEach(c => {
+        if(c.type === 'folder') deleteFolderRecursive(c.id);
+        else fileDB = fileDB.filter(f => f.id !== c.id);
+    });
+    fileDB = fileDB.filter(f => f.id !== folderId);
+}
+
+/* ------------------ Create Folder ------------------ */
+document.getElementById('new-folder-btn').onclick = () => {
+    const name = prompt('Nome da pasta:');
+    if(!name || !name.trim()) return;
+
+    const siblings = getFolderChildren(currentFolderId);
+    if(siblings.some(f => f.name === name.trim())) {
+        alert('Já existe um ficheiro ou pasta com este nome!');
+        return;
+    }
+
+    const newId = fileDB.length ? Math.max(...fileDB.map(f => f.id)) + 1 : 1;
+    fileDB.push({ id: newId, name: name.trim(), type: 'folder', parent: currentFolderId });
+
+    saveUserData('fileDB', fileDB);
+    loadFiles();
+};
+
+/* ------------------ Upload Files ------------------ */
+document.getElementById('upload-btn').onclick = () =>
+    document.getElementById('file-input').click();
+
+document.getElementById('file-input').onchange = e => {
+    const inputFiles = e.target.files;
+
+    for(const file of inputFiles) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            const siblings = getFolderChildren(currentFolderId);
+            const existing = siblings.find(f => f.name === file.name && f.type === 'file');
+
+            if(existing) {
+                if(!confirm(`"${file.name}" já existe. Substituir?`)) return;
+                existing.content = ev.target.result;
+            } else {
+                const newId = fileDB.length ? Math.max(...fileDB.map(f => f.id)) + 1 : 1;
+                fileDB.push({ id: newId, name: file.name, type: 'file', content: ev.target.result, parent: currentFolderId });
+            }
+
+            saveUserData('fileDB', fileDB);
+            loadFiles();
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+/* ------------------ Inicializar ------------------ */
+loadFiles();
+
+
+/* Notas */
+const notesText = document.getElementById('notes-text');
+if (notesText) {
+    notesText.value = getUserData('notes', '');
+    notesText.oninput = () => saveUserData('notes', notesText.value);
+}
+
+/* Relógio */
+function updateClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('pt-PT', {hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false});
+    const dateStr = now.toLocaleDateString('pt-PT', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+    if (document.getElementById('clock-time')) {
+        document.getElementById('clock-time').textContent = timeStr;
+        document.getElementById('clock-date').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+    }
+    if (document.getElementById('big-clock') && !document.getElementById('clock-page').classList.contains('hidden')) {
+        document.getElementById('big-clock').textContent = timeStr;
+        document.getElementById('big-date').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+    }
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ============== CALENDÁRIO ============== */
+function initCalendar() {
+    if (!currentUser) return;
+    const calendarEl = document.getElementById('full-calendar');
+    const savedEvents = getUserData('calendar_events', []);
+    calendar = new FullCalendar.Calendar(calendarEl, {
+        locale: 'pt',
+        initialView: 'dayGridMonth',
+        
+        selectable: true,
+        editable: true,
+        events: savedEvents,
+        select: function(info) {
+            const title = prompt('Título do evento:', 'Novo Evento');
+            if (title) {
+                calendar.addEvent({
+                    title: title,
+                    start: info.start,
+                    end: info.end,
+                    allDay: info.allDay
+                });
+                saveCalendarEvents();
+            }
+            calendar.unselect();
+        },
+        eventClick: function(info) {
+            const action = prompt(
+                `Evento: "${info.event.title}"\n\nDigite o novo título para editar\nou escreva "eliminar" para remover`,
+                info.event.title
+            );
+            if (action === null) return;
+            const lower = action.trim().toLowerCase();
+            if (lower === 'eliminar' || lower === 'delete') {
+                if (confirm(`Tem a certeza que quer eliminar "${info.event.title}"?`)) {
+                    info.event.remove();
+                    saveCalendarEvents();
+                }
+            } else if (action.trim() !== '') {
+                info.event.setProp('title', action.trim());
+                saveCalendarEvents();
+            }
+        },
+        eventDrop: function() { saveCalendarEvents(); },
+        eventResize: function() { saveCalendarEvents(); }
+    });
+    calendar.render();
+}
+function saveCalendarEvents() {
+    if (calendar) {
+        const events = calendar.getEvents().map(ev => ({
+            title: ev.title,
+            start: ev.start ? ev.start.toISOString() : null,
+            end: ev.end ? ev.end.toISOString() : null,
+            allDay: ev.allDay
+        }));
+        saveUserData('calendar_events', events);
+    }
+}
+
+/* ============== HORIZON - NAVEGADOR ============== */
+function loadHorizonHistory() {
+    const history = getUserData('horizon_history', []);
+    const list = document.getElementById('history-list');
+    list.innerHTML = '';
+    history.slice(-10).reverse().forEach(query => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.textContent = query;
+        div.onclick = () => {
+            document.getElementById('horizon-input').value = query;
+            performHorizonSearch(query);
+        };
+        list.appendChild(div);
+    });
+}
+function performHorizonSearch(query) {
+    if (!query.trim()) return;
+    const encoded = encodeURIComponent(query.trim());
+    const url = `https://www.google.com/search?q=${encoded}`;
+    window.open(url, '_blank');
+    let history = getUserData('horizon_history', []);
+    history = history.filter(h => h !== query.trim());
+    history.push(query.trim());
+    saveUserData('horizon_history', history);
+    loadHorizonHistory();
+}
+document.getElementById('horizon-form')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const query = document.getElementById('horizon-input').value;
+    performHorizonSearch(query);
+});
+document.getElementById('clear-history')?.addEventListener('click', () => {
+    if (confirm('Limpar todo o histórico de pesquisas?')) {
+        saveUserData('horizon_history', []);
+        loadHorizonHistory();
+    }
+});
+
+/* ============== EDITOR DE CÓDIGO MELHORADO ============== */
+function loadCodeEditor() {
+    const editor = document.getElementById('code-editor');
+    if (!editor) return;
+    editor.value = getUserData('code_editor_content', '<!DOCTYPE html>\n<html>\n<head>\n <title>Novo Projeto</title>\n</head>\n<body>\n <h1>Olá, mundo!</h1>\n</body>\n</html>');
+    editor.addEventListener('input', () => {
+        saveUserData('code_editor_content', editor.value);
+    });
+    document.getElementById('open-code-btn').onclick = () => document.getElementById('code-file-input').click();
+    document.getElementById('code-file-input').onchange = e => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                editor.value = ev.target.result;
+                saveUserData('code_editor_content', editor.value);
+            };
+            reader.readAsText(file);
+        }
+    };
+    document.getElementById('save-code-btn').onclick = () => {
+        const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'meu_codigo.html';
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+    document.getElementById('preview-code-btn').onclick = () => {
+        const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+    };
+}
+
+// Botão de configurações (⚙️)
+document.getElementById('config-btn').onclick = () => {
+    showPage('settings-page');
+};
+
+// Formulário de alteração de password
+document.getElementById('change-password-form').onsubmit = e => {
+    e.preventDefault();
+
+    const currentPass = document.getElementById('current-pass').value;
+    const newPass = document.getElementById('new-pass').value;
+    const confirmPass = document.getElementById('confirm-pass').value;
+
+    if (newPass !== confirmPass) {
+        return alert('A nova palavra-passe e a confirmação não coincidem!');
+    }
+    if (newPass.length < 4) {
+        return alert('A nova palavra-passe deve ter pelo menos 4 caracteres.');
+    }
+
+    // Buscar utilizadores
+    let users = getUsers();
+    const userIndex = users.findIndex(u => u.user === currentUser);
+
+    if (users[userIndex].pass !== currentPass) {
+        return alert('A palavra-passe atual está incorreta!');
+    }
+
+    // Atualizar password
+    users[userIndex].pass = newPass;
+    localStorage.setItem(usersKey, JSON.stringify(users));
+
+    alert('Palavra-passe alterada com sucesso!');
+    document.getElementById('change-password-form').reset();
+};
+
+// Apagar conta
+document.getElementById('delete-account-btn').onclick = () => {
+    if (!confirm('Tem a certeza absoluta que quer apagar a tua conta? Esta ação NÃO pode ser desfeita.')) {
+        return;
+    }
+    if (!confirm('Última confirmação: todos os dados serão perdidos. Continuar?')) {
+        return;
+    }
+
+    // Remover utilizador da lista
+    let users = getUsers();
+    users = users.filter(u => u.user !== currentUser);
+    localStorage.setItem(usersKey, JSON.stringify(users));
+
+    // Apagar todos os dados do utilizador
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(`user_${currentUser}_`)) {
+            keysToRemove.push(key);
+        }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+
+    alert('Conta apagada com sucesso.');
+    currentUser = null;
+    showPage('login-page');
+};
+/* ============== PÁGINA DE PERFIL ============= */
+
+// Abrir página de perfil
+document.getElementById('perfil-btn').onclick = () => {
+    showPage('profile-page');
+    loadProfileData();
+};
+
+// Carregar dados do perfil
+function loadProfileData() {
+    const profile = getUserData('profile_info', {
+        fullName: '',
+        nationality: '',
+        birthDate: '',
+        gender: '',
+        height: '',
+        phone: '',
+        email: ''
+    });
+
+    document.getElementById('full-name').value = profile.fullName || '';
+    document.getElementById('nationality').value = profile.nationality || '';
+    document.getElementById('birth-date').value = profile.birthDate || '';
+    document.getElementById('gender').value = profile.gender || '';
+    document.getElementById('height').value = profile.height || '';
+    document.getElementById('phone').value = profile.phone || '';
+    document.getElementById('email').value = profile.email || '';
+
+    // Atualizar idade automaticamente
+    calculateAge();
+
+    // Atualizar foto grande
+    const photo = getUserData('photo', '');
+    const imgBig = document.getElementById('profile-img-big');
+    imgBig.src = photo || 'https://via.placeholder.com/140?text=' + (currentUser ? currentUser[0].toUpperCase() : 'U');
+}
+
+// Calcular idade a partir da data de nascimento
+function calculateAge() {
+    const birthDate = document.getElementById('birth-date').value;
+    if (!birthDate) {
+        document.getElementById('age').value = '';
+        return;
+    }
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    document.getElementById('age').value = age + ' anos';
+}
+
+// Atualizar idade sempre que mudar a data
+document.getElementById('birth-date').addEventListener('change', calculateAge);
+
+// Guardar dados do perfil
+document.getElementById('profile-form').onsubmit = e => {
+    e.preventDefault();
+
+    const profileData = {
+        fullName: document.getElementById('full-name').value.trim(),
+        nationality: document.getElementById('nationality').value.trim(),
+        birthDate: document.getElementById('birth-date').value,
+        gender: document.getElementById('gender').value,
+        height: document.getElementById('height').value,
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('email').value.trim()
+    };
+
+    saveUserData('profile_info', profileData);
+    alert('Perfil atualizado com sucesso!');
+};
+
+// Alterar foto de perfil (na página de perfil)
+document.getElementById('change-photo-btn-big').onclick = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                const dataUrl = ev.target.result;
+                document.getElementById('profile-img-big').src = dataUrl;
+                document.getElementById('profile-img').src = dataUrl; // atualiza também no dashboard
+                saveUserData('photo', dataUrl);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+};
+
+/* Início */
+showPage('login-page');
+</script>
+</body>
+</html>
