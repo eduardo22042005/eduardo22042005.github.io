@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portefólio Eduardo Campos</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f0f0f0;
-    }
-    h1 {
-      margin-bottom: 40px;
-      color: #333;
-    }
-
-    section {
+    <meta charset="UTF-8">
+    <title>Portfólio | Eduardo Campos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #111827;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin-bottom: 5px;
+        }
+        section {
             max-width: 900px;
             margin: auto;
             padding: 30px 20px;
@@ -30,8 +30,34 @@
             padding-bottom: 5px;
             margin-bottom: 20px;
         }
-    
-    .menu {
+        .project {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .project a {
+            display: inline-block;
+            margin-right: 10px;
+            margin-top: 10px;
+            text-decoration: none;
+            color: white;
+            background: #2563eb;
+            padding: 8px 14px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .project a.download {
+            background: #16a34a;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #e5e7eb;
+            font-size: 14px;
+        }
+		 .menu {
       display: flex;
       gap: 20px;
     }
@@ -48,13 +74,16 @@
     .menu button:hover {
       background-color: #45a049;
     }
-  </style>
+    </style>
 </head>
 <body>
-  <h1>Portefólio Eduardo Campos</h1>
-  <p>Técnico de Gestão e Programação de Sistemas Informáticos | Nível 4</p>
 
-  <section>
+<header>
+    <h1>Eduardo Campos</h1>
+    <p>Técnico de Gestão e Programação de Sistemas Informáticos | Nível 4</p>
+</header>
+
+ <section>
     <h2>Sobre Mim</h2>
 
     <img 
@@ -80,10 +109,24 @@
 
 </section>
 
-  
+<section>
   <div class="menu">
     <button onclick="window.location.href='programacao.html'">Programação</button>
     <button onclick="window.location.href='hardware.html'">Hardware</button>
   </div>
+</section>
+
+<section>
+    <h2>Contacto</h2>
+    <p>Email: eduardo22042005@email.com</p>
+    <p>Telemóvel: +351 965 770 699</p>
+</section>
+
+<footer>
+    © 2025 – Portfólio de Eduardo Campos
+</footer>
+
 </body>
 </html>
+
+
