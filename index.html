@@ -1,183 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <title>Portfólio | Eduardo Campos</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background: #f4f4f4;
-            color: #333;
-        }
-        header {
-            background: #111827;
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin-bottom: 5px;
-        }
-        section {
-            max-width: 900px;
-            margin: auto;
-            padding: 30px 20px;
-        }
-        h2 {
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 5px;
-            margin-bottom: 20px;
-        }
-        .project {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        .project a {
-            display: inline-block;
-            margin-right: 10px;
-            margin-top: 10px;
-            text-decoration: none;
-            color: white;
-            background: #2563eb;
-            padding: 8px 14px;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .project a.download {
-            background: #16a34a;
-        }
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: #e5e7eb;
-            font-size: 14px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portefólio Eduardo Campos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    h1 {
+      margin-bottom: 40px;
+      color: #333;
+    }
+    .menu {
+      display: flex;
+      gap: 20px;
+    }
+    .menu button {
+      padding: 20px 40px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      transition: background-color 0.3s;
+    }
+    .menu button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-
-<header>
-    <h1>Eduardo Campos</h1>
-    <p>Técnico de Gestão e Programação de Sistemas Informáticos | Nível 4</p>
-</header>
-
-<section>
-    <h2>Sobre Mim</h2>
-  
-  <div style="display:flex; align-items:center; gap:20px; flex-wrap:wrap;">
-    <img 
-      src="Eduardo.jpg" 
-      alt="Foto de Eduardo Campos"
-      style="
-        width:150px;
-        height:150px;
-        border-radius:50%;
-        object-fit:cover;
-        border:4px solid #e5e7eb;
-      ">
-    
-    <p style="margin:0; flex:1;">
-      Recém-formado em Gestão e Programação de Sistemas Informáticos (Nível 4),
-      com experiência prática em desenvolvimento web e lógica de programação.
-      Tenho bases sólidas em HTML, CSS, JavaScript, PHP e C#, e estou em constante
-      aprendizagem para evoluir como programador e integrar o mercado de trabalho
-      na área de IT.
-    </p>
+  <h1>Portefólio Eduardo Campos</h1>
+  <div class="menu">
+    <button onclick="window.location.href='programacao.html'">Programação</button>
+    <button onclick="window.location.href='hardware.html'">Hardware</button>
   </div>
-    <h2>Linguagens de Programação</h2>
-    <p>HTML</p>
-    <p>CSS</p>
-    <p>JavaScript</p>
-    <p>PHP</p>
-    <p>C#</p>
-    <p>Python(nível básico)</p>
-
-    <h2>Outros conhecimentos</h2>
-    <p>Desenvolvimento de websites</p>
-    <p>Lógica de programção</p>
-    <p>Noções de bases de dados</p>
-    <p>Resolução de problemas</p>
-    <p>Trabalho com projetos práticos</p>
-    
-    <h2>Certificado</h2>
-    <a href="certificado.pdf" traget="_blank"> Ver certificado de hablitações </a>        
-</section>
-
-<section>
-    <h2>Projetos</h2>
-
-    <div class="project">
-        <h3>HaloDesk</h3>
-        <p>
-            Sistema completo de gestão com login, blocos de notas, upload de ficheiros com oportunidade de utilizador criar pastas para se organizar, inclui tambem um editor de código onde o utilizador pode criar programas e fazer a pré-visualização, o sistema conta também com um motor de pesquisa, com um relógio, com um calendário onde se pode criar eventos e integração de chatbot.
-        </p>
-        <p><strong>Tecnologias:</strong> HTML, CSS, JavaScript</p>
-        <!-- Substitui pelos links corretos -->
-        <a href="HaloDesk.zip" target="_blank" class="download">Download</a>
-        <a href="https://eduardo22042005.github.io/HaloDesk" target="_blank">Ver Código</a>
-    </div>
-
-    <div class="project">
-        <h3>NubibusOne</h3>
-        <p>
-            Uma cloud que desenvolvi para tornar o dia a dia das pessoas mais fácil.
-            Esta cloud conta com um login, um bloco de notas, uma area de ficheiros, um calendário, uma calculadora, perfil e configurações de conta.
-            A NubibusOne pode ser tanto usada no computador como no telémovel.
-        </p>
-        <p><strong>Tecnologias:</strong> HTML, CSS, JavaScript</p>
-        <!-- Substitui pelos links corretos -->
-        <a href="NubibusOne.zip" target="_blank" class="download">Download</a>
-        <a href="https://eduardo22042005.github.io/NubibusOne" target="_blank">Ver Código</a>
-    </div>
-
-    <div class="project">
-        <h3>Relogio de programador</h3>
-        <p>
-            Um relógio que foi desenvolvido para ajudar os programadores a lembrarem-se de alguns códigos de programação e alguns atalhos do windows
-        </p>
-        <p><strong>Tecnologias:</strong> Python</p>
-        <a href="prelogio.zip" target="_blank" class="download">Download</a>
-    </div>
-
-    <div class="project">
-        <h3>Outro Projeto</h3>
-        <p>
-            Descrição curta do outro projeto.
-        </p>
-        <p><strong>Tecnologias:</strong> Python / HTML / PHP</p>
-        <a href="outro-projeto.zip" target="_blank" class="download">Download</a>
-        <a href="https://eduardo22042005.github.io/outro-projeto" target="_blank">Ver Código</a>
-    </div>
-
-</section>
-
-<section>
-    <h2>Contacto</h2>
-    <p>Email: eduardo22042005@gmail.com</p>
-    <p>Telemóvel: +351 965 770 699</p>
-</section>
-
-<footer>
-    © 2025 – Portfólio de Eduardo Campos
-</footer>
-
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
