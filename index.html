@@ -19,6 +19,18 @@
       margin-bottom: 40px;
       color: #333;
     }
+
+    section {
+            max-width: 900px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+        h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+    
     .menu {
       display: flex;
       gap: 20px;
@@ -40,6 +52,35 @@
 </head>
 <body>
   <h1>Portefólio Eduardo Campos</h1>
+  <p>Técnico de Gestão e Programação de Sistemas Informáticos | Nível 4</p>
+
+  <section>
+    <h2>Sobre Mim</h2>
+
+    <img 
+      src="Eduardo.jpg" 
+      alt="Foto de Eduardo Campos"
+      style="
+        width:150px;
+        height:150px;
+        border-radius:50%;
+        object-fit:cover;
+        border:4px solid #e5e7eb;
+        margin-bottom:15px;
+      ">
+
+    <p>
+        Recém-formado em Gestão e Programação de Sistemas Informáticos (Nível 4),
+        com experiência prática em desenvolvimento web e lógica de programação.
+        Tenho bases sólidas em HTML, CSS, JavaScript, PHP e C#, e estou em constante
+        aprendizagem para evoluir como programador e integrar o mercado de trabalho
+        na área de IT.
+    </p>
+    <a href="certificado.pdf" target="_blank"> Ver Certificado de habilitações</a>
+
+</section>
+
+  
   <div class="menu">
     <button onclick="window.location.href='programacao.html'">Programação</button>
     <button onclick="window.location.href='hardware.html'">Hardware</button>
